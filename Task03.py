@@ -92,17 +92,16 @@ if __name__ == "__main__":
                 stacker.push(int(element))
 
             case "":                        # To end
+                list_tokens = regEx.scanning()
+                for token in list_tokens: print(f"Token [type={token.type}, lexeme={token.lexeme}]")
+
                 print(stacker.head.next.value)
                 stacker.pop()
                 empty = True
 
-                list_tokens = regEx.scanning()
-                for token in list_tokens: print(f"Token [type={token.type}, lexeme={token.lexeme}]")
                 exit()
 
             case default:                   # For error printing
-                if error is False:
-                    error = True
-                    error_element = element
+                pass
 
         regEx.add(element)
