@@ -1,3 +1,6 @@
+import re
+
+
 class Node:
     def __init__(self, value):
         self.value = value
@@ -39,6 +42,28 @@ class Stack:
             return remove.value
 
 
+class Regex:
+    def __init__(self):
+        self.regex = r"\d+|[+\-*/]"
+        self.input_list = list()
+        self.tokens = list()
+
+    def add(self, element):
+        self.input_list.append(element)
+
+    def scanning(self):
+        for element in self.input_list:
+            check = re.match(self.regex, element)
+            if check:
+                if element.isdigit():
+                    self.tokens.append(Token("NUM", int(element)))
+                else:
+                    self.tokens.append(Token(OP[element], element))
+            else:
+                print(f"Error: Unexpected character: {element}")
+                exit()
+        return self.tokens
+
 class Token:
     def __init__(self, type, value):
         self.type = type
@@ -48,9 +73,9 @@ class Token:
 
 
 if __name__ == "__main__":
-    empty, error, error_element = False, False, None
+    empty = False
     stacker = Stack()
-    token_list = list()
+    regEx = Regex()
     OP = {"+":"PLUS", "-": "MINUS", "*": "STAR", "/": "SLASH"}
 
     while empty == False:
@@ -62,29 +87,22 @@ if __name__ == "__main__":
                 v0 = stacker.pop()
                 v1 = stacker.pop()
                 stacker.push(eval(f"{v1} {x} {v0}"))
-                type = OP[x]   
             
             case x if x.isdigit() == True:
                 stacker.push(int(element))
-                type = "NUM"
-
 
             case "":                        # To end
-                if error == True:
-                    print(f"Error: unexpected character: {element}")
-                else:
-                    for token in token_list:
-                        print(token.to_string())
-                    print(stacker.head.next.value)
+                print(stacker.head.next.value)
+                stacker.pop()
+                empty = True
 
-                stacker = Stack()
-                empty, type = True, None
+                list_tokens = regEx.scanning()
+                for token in list_tokens: print(f"Token [type={token.type}, lexeme={token.lexeme}]")
                 exit()
 
             case default:                   # For error printing
                 if error is False:
                     error = True
                     error_element = element
-        
-        element = Token(type, element)
-        token_list.append(element)
+
+        regEx.add(element)
